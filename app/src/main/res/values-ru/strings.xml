@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Блоки — головоломка</string>
+
+    <!-- Меню -->
+    <string name="menu_play">ИГРАТЬ</string>
+    <string name="menu_shop">Магазин</string>
+    <string name="menu_stats">Статистика</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_daily_bonus">Ежедневный бонус</string>
+    <string name="menu_how_to_play">Как играть</string>
+    <string name="menu_best_score">Рекорд</string>
+    <string name="menu_coins">Монеты</string>
+
+    <!-- Общие -->
+    <string name="common_ok">ОК</string>
+    <string name="common_cancel">Отмена</string>
+    <string name="common_yes">Да</string>
+    <string name="common_no">Нет</string>
+    <string name="common_close">Закрыть</string>
+    <string name="common_back">Назад</string>
+    <string name="common_new">НОВОЕ</string>
+    <string name="common_soon">Скоро</string>
+
+    <!-- Игра -->
+    <string name="game_score">Очки</string>
+    <string name="game_best">Рекорд</string>
+    <string name="game_combo">Комбо ×%1$d</string>
+    <string name="game_over_title">Игра окончена</string>
+    <string name="game_new_record">Новый рекорд!</string>
+    <string name="game_play_again">Играть снова</string>
+    <string name="game_main_menu">В меню</string>
+    <string name="game_continue">Продолжить</string>
+    <string name="game_continue_hint">Очистим нижние ряды и играем дальше</string>
+    <string name="game_double_coins">Удвоить монеты</string>
+    <string name="game_double_hint">Получить ×2 монет за эту игру</string>
+    <string name="game_no_thanks">Нет, спасибо</string>
+    <string name="game_pause">Пауза</string>
+    <string name="game_resume">Продолжить</string>
+    <string name="game_quit_title">Выйти из игры?</string>
+    <string name="game_quit_message">Текущий прогресс будет потерян.</string>
+    <string name="game_quit_stay">Остаться</string>
+    <string name="game_quit_leave">Выйти</string>
+    <string name="game_no_moves">Ходов больше нет</string>
+    <string name="game_lines_cleared">Линии: %1$d</string>
+
+    <!-- Реклама -->
+    <string name="ads_loading">Загружаем рекламу…</string>
+    <string name="ads_video">Видео</string>
+    <string name="ads_unavailable">Реклама сейчас недоступна. Попробуйте позже.</string>
+    <string name="ads_reward_coins">+%1$d монет</string>
+    <string name="ads_reward_granted">Награда получена</string>
+    <string name="ads_watch_ad">Смотреть рекламу</string>
+    <string name="ads_free_coins">Бесплатные монеты</string>
+    <string name="ads_video_for_reward">Посмотрите видео и получите награду</string>
+    <string name="ads_bonus_ready">Бонус готов</string>
+    <string name="ads_already_used">Уже использовано в этой игре</string>
+    <string name="ads_test_mode">Используются тестовые рекламные блоки</string>
+
+    <string name="ad_icon_desc">Реклама</string>
+
+    <!-- Магазин -->
+    <string name="shop_title">Магазин</string>
+    <string name="shop_themes">Темы</string>
+    <string name="shop_equipped">Выбрано</string>
+    <string name="shop_equip">Выбрать</string>
+    <string name="shop_buy_for">Купить за %1$d</string>
+    <string name="shop_owned">Куплено</string>
+    <string name="shop_not_enough">Не хватает монет</string>
+    <string name="shop_free_coins">Бесплатные монеты</string>
+    <string name="theme_default">Классика</string>
+    <string name="theme_neon">Неон</string>
+    <string name="theme_candy">Карамель</string>
+    <string name="theme_ocean">Океан</string>
+    <string name="theme_forest">Лес</string>
+    <string name="theme_galaxy">Галактика</string>
+    <string name="theme_mono">Моно</string>
+
+    <!-- Статистика -->
+    <string name="stats_title">Статистика</string>
+    <string name="stats_games">Игр сыграно</string>
+    <string name="stats_best">Лучший результат</string>
+    <string name="stats_total_score">Всего очков</string>
+    <string name="stats_lines">Линий собрано</string>
+    <string name="stats_best_combo">Лучшее комбо</string>
+    <string name="stats_play_time">Время в игре</string>
+    <string name="stats_achievements">Достижения</string>
+    <string name="stats_time_format">%1$d мин</string>
+
+    <!-- Достижения -->
+    <string name="ach_first_game">Первые шаги</string>
+    <string name="ach_first_game_desc">Сыграйте первую игру</string>
+    <string name="ach_score_1000">Разминка</string>
+    <string name="ach_score_1000_desc">Наберите 1000 очков за игру</string>
+    <string name="ach_score_5000">Мастер блоков</string>
+    <string name="ach_score_5000_desc">Наберите 5000 очков за игру</string>
+    <string name="ach_lines_100">Чистюля</string>
+    <string name="ach_lines_100_desc">Соберите 100 линий всего</string>
+    <string name="ach_combo_5">Комбо-мастер</string>
+    <string name="ach_combo_5_desc">Сделайте комбо ×5</string>
+    <string name="ach_games_10">Постоянный игрок</string>
+    <string name="ach_games_10_desc">Сыграйте 10 игр</string>
+    <string name="ach_games_50">Преданный игре</string>
+    <string name="ach_games_50_desc">Сыграйте 50 игр</string>
+    <string name="ach_coins_500">Богач</string>
+    <string name="ach_coins_500_desc">Заработайте 500 монет всего</string>
+
+    <!-- Настройки -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_sound">Звук</string>
+    <string name="settings_haptics">Вибрация</string>
+    <string name="settings_ads_personalization">Персонализированная реклама</string>
+    <string name="settings_ads_personalization_desc">Разрешить использовать рекламный идентификатор для подбора более подходящей рекламы. Отключение может снизить количество рекламы, но игра остаётся бесплатной.</string>
+    <string name="settings_privacy_policy">Политика конфиденциальности</string>
+    <string name="settings_reset">Сбросить прогресс</string>
+    <string name="settings_reset_title">Сбросить прогресс?</string>
+    <string name="settings_reset_message">Все рекорды, монеты и открытые темы будут удалены. Действие необратимо.</string>
+    <string name="settings_version">Версия %1$s</string>
+    <string name="settings_about">О игре</string>
+    <string name="settings_about_text">Классическая головоломка с блоками. Бесплатная, работает без интернета, поддерживается рекламой Рекламной сети Яндекса.</string>
+
+    <!-- Согласие на обработку данных -->
+    <string name="consent_title">Данные и реклама</string>
+    <string name="consent_message">Мы показываем рекламу, чтобы игра оставалась бесплатной. С вашего согласия мы и наши партнёры можем использовать идентификаторы устройства для показа персонализированной рекламы. Выбор можно изменить в настройках.</string>
+    <string name="consent_accept_all">Принять все</string>
+    <string name="consent_essential_only">Только неонаправленная</string>
+    <string name="consent_learn_more">Подробнее</string>
+
+    <!-- Обучение -->
+    <string name="tutorial_title">Как играть</string>
+    <string name="tutorial_1_title">Ставьте блоки</string>
+    <string name="tutorial_1_desc">Перетащите фигуру из лотка на поле 8×8.</string>
+    <string name="tutorial_2_title">Собирайте линии</string>
+    <string name="tutorial_2_desc">Заполните весь ряд или столбец — он исчезнет, а вы получите очки.</string>
+    <string name="tutorial_3_title">Делайте комбо</string>
+    <string name="tutorial_3_desc">Убирайте несколько линий сразу — за комбо дают больше очков.</string>
+    <string name="tutorial_4_title">Следите за лотком</string>
+    <string name="tutorial_4_desc">Игра заканчивается, когда ни одна из трёх фигур не помещается на поле.</string>
+    <string name="tutorial_got_it">Понятно</string>
+
+    <!-- Разное -->
+    <string name="offline_notice">Нет соединения — реклама недоступна, но игра работает офлайн.</string>
+    <string name="daily_bonus_title">Ежедневный бонус</string>
+    <string name="daily_bonus_reward">+%1$d монет</string>
+    <string name="daily_bonus_claimed">Возвращайтесь завтра за новым бонусом</string>
+</resources>
