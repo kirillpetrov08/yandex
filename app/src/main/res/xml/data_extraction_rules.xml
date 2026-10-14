@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-extraction-rules>
     <cloud-backup>
+        <!-- В облако попадает только прогресс игрока (Сброс/восстановление — см. Prefs.kt). -->
         <include domain="sharedpref" path="block_puzzle_prefs.xml" />
-        <exclude domain="sharedpref" path="yandex_mobile_ads.xml" />
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="block_puzzle_prefs.xml" />
