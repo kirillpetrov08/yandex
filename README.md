@@ -13,11 +13,14 @@ Compose с полностью интегрированной рекламой Р
 | Игра | Поле 8×8, лоток из 3 фигур, очистка линий и комбо, 7 тем, монеты, ежедневный бонус, статистика, 8 достижений, процедурный звук (без аудиофайлов) |
 | Реклама | Banner (sticky), Interstitial, Rewarded, App Open, Native + частотные политики в одном месте |
 | Приватность | Диалог согласия до инициализации SDK, переключатель персонализации в настройках, политика конфиденциальности |
-| Сборка | Версии и ID блоков — в `gradle.properties`; подпись из `keystore.properties`; CI-workflow в `docs/ci/android.yml` |
+| Сборка | Версии и ID блоков — в `gradle.properties`; подпись из `keystore.properties`; CI-workflow в `docs/ci/android.yml` (собирает APK/AAB и умеет публиковать в Play) |
 | Публикация | `store-listing/` (тексты ru/en, Data Safety, App content, release notes, иконка, feature graphic, 8 скриншотов), `app-ads.txt`, `privacy-policy.html` |
 | Знания | `docs/` — 13 документов: все форматы РСЯ, правила, модерация, выплаты, стратегия дохода, SDK-шпаргалка, чек-листы, troubleshooting |
 
 ## Быстрый старт
+
+Пошаговая инструкция «от нуля до продакшена» — [`DEPLOY.md`](DEPLOY.md). Ниже — то же самое
+в сокращении.
 
 ```bash
 # 1. (опционально) свои названия/идентификаторы
@@ -52,7 +55,8 @@ EOF
 | `app-ads.txt` | вместо `YOUR_PARTNER_ID` вставьте ID партнёра из интерфейса РСЯ |
 | `store-listing/` | при желании — свои тексты и графика (готовые уже проходят требования Play) |
 
-Полный чек-лист: `docs/12-checklist-release.md`. Пошаговая публикация: `docs/10-google-play-release.md`.
+Полный чек-лист: `docs/12-checklist-release.md`. Пошаговая публикация: [`DEPLOY.md`](DEPLOY.md)
+и `docs/10-google-play-release.md`.
 
 ## Рекламные точки
 

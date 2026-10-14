@@ -53,17 +53,20 @@ keyPassword=ВАШ_ПАРОЛЬ
 
 | Секрет | Значение |
 | --- | --- |
-| `KEYSTORE_FILE` | путь к `upload-keystore.jks` на раннере (например, файл из base64-шага) |
+| `KEYSTORE_BASE64` | файл `upload-keystore.jks`, закодированный в base64: `base64 -w0 upload-keystore.jks` |
 | `KEYSTORE_PASSWORD` | пароль хранилища |
 | `KEY_ALIAS` | `upload` |
 | `KEY_PASSWORD` | пароль ключа |
+| `PLAY_SERVICE_ACCOUNT_JSON` | необязательно: ключ сервисного аккаунта Google Play для автозагрузки AAB |
 
-Проще всего: положить keystore в base64 и декодировать шагом workflow. Шаблон workflow —
-`docs/ci/android.yml` (скопируйте его в `.github/workflows/android.yml`).
+Workflow сам декодирует base64 в `upload-keystore.jks`, подставит путь в переменную
+`KEYSTORE_FILE` (её читает `app/build.gradle.kts`), проверит подпись через `jarsigner`
+и положит AAB в артефакты. Шаблон — `docs/ci/android.yml` (скопируйте его в
+`.github/workflows/android.yml`, там же в комментариях описаны все секреты).
 
 ## Шаг 3. Сборка AAB
 
-Локально:
+Локально (путь A — сборка в GitHub Actions — описан в [`DEPLOY.md`](../DEPLOY.md)):
 
 ```bash
 ./gradlew clean testDebugUnitTest      # тесты логики игры и рекламных политик

@@ -1,3 +1,20 @@
+# Сборка и публикация BlockPuzzle в GitHub Actions.
+#
+# КАК ВКЛЮЧИТЬ: скопируйте этот файл в .github/workflows/android.yml своего репозитория
+# и закоммитьте. Больше ничего настраивать не нужно — тесты и сборка заработают сразу.
+# Секреты (Settings → Secrets and variables → Actions) нужны только для подписи и автозагрузки:
+#
+#   KEYSTORE_BASE64          — ваш upload-keystore.jks в base64:
+#                              Linux/macOS: base64 -w0 upload-keystore.jks | pbcopy
+#   KEYSTORE_PASSWORD        — пароль хранилища
+#   KEY_ALIAS                — алиас ключа (upload)
+#   KEY_PASSWORD             — пароль ключа
+#   PLAY_SERVICE_ACCOUNT_JSON — JSON сервисного аккаунта Google Play (необязательно,
+#                              включает автоматическую загрузку AAB в трек internal)
+#
+# Без секретов workflow всё равно работает: собирает debug-APK и AAB, подписанный debug-ключом
+# (для Google Play он не подойдёт — только для проверки на телефоне).
+
 name: Android CI
 
 on:
@@ -6,9 +23,12 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    name: Сборка APK/AAB и тесты
+    name: Тесты и сборка (APK + AAB)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,10 +44,25 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Установка платформы Android 36
-        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0" || true
+        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0"
 
       - name: Gradle
         uses: gradle/actions/setup-gradle@v4
+
+      - name: Ключ подписи из секретов
+        id: keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "${KEYSTORE_BASE64}" ]; then
+            printf '%s' "${KEYSTORE_BASE64}" | base64 --decode > upload-keystore.jks
+            echo "KEYSTORE_FILE=upload-keystore.jks" >> "$GITHUB_ENV"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+            echo "Ключ подписи найден: AAB будет подписан upload-ключом."
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Нет ключа подписи::Секреты KEYSTORE_BASE64/KEYSTORE_PASSWORD не заданы — AAB будет подписан debug-ключом и не подойдёт для Google Play."
+          fi
 
       - name: Unit-тесты логики игры и рекламных политик
         run: ./gradlew testDebugUnitTest --stacktrace
@@ -37,15 +72,71 @@ jobs:
 
       - name: Release AAB (для загрузки в Google Play)
         env:
-          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease --stacktrace
 
-      - name: Артефакты
+      - name: Проверка подписи AAB
+        if: steps.keystore.outputs.signed == 'true'
+        run: |
+          set -euo pipefail
+          AAB="app/build/outputs/bundle/release/app-release.aab"
+          ls -lh "$AAB"
+          jarsigner -verify "$AAB"
+          echo "Подпись проверена. Отпечаток ключа:"
+          keytool -printcert -jarfile "$AAB" | head -20
+
+      - name: Артефакты сборки
         uses: actions/upload-artifact@v4
         with:
-          name: block-puzzle-build
-          path: |
-            app/build/outputs/apk/debug/*.apk
-            app/build/outputs/bundle/release/*.aab
-            app/build/reports/tests/testDebugUnitTest/**
+          name: build-outputs
+          path: app/build/outputs
           if-no-files-found: warn
+
+      - name: Отчёты тестов
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: app/build/reports
+          if-no-files-found: warn
+
+  publish:
+    name: Загрузка AAB в Google Play (трек internal)
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Проверка наличия ключа сервисного аккаунта
+        id: check
+        env:
+          PLAY_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "${PLAY_JSON}" ] && [ -n "${KEYSTORE_BASE64}" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Автозагрузка выключена::Нужны секреты PLAY_SERVICE_ACCOUNT_JSON и KEYSTORE_BASE64. AAB можно загрузить в Play Console вручную (см. DEPLOY.md, шаг 6)."
+          fi
+
+      - name: Скачать артефакт сборки
+        if: steps.check.outputs.enabled == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: build-outputs
+          path: app/build/outputs
+
+      - name: Загрузить AAB в трек internal
+        if: steps.check.outputs.enabled == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          # packageName должен совпадать с app.applicationId в gradle.properties
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.blockpuzzle.app
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          mappingFile: app/build/outputs/mapping/release/mapping.txt
+          # status: draft — релиз создаётся черновиком: зайдите в Play Console → Testing → Internal
+          # testing и нажмите «Публикация», чтобы отдать сборку тестировщикам.
+          track: internal
+          status: draft

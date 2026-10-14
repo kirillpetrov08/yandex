@@ -36,6 +36,7 @@
 
 | Путь | Что это |
 | --- | --- |
+| [../DEPLOY.md](../DEPLOY.md) | Инструкция «в день деплоя»: сборка AAB (локально или в Actions), Play Console, РСЯ, сайт |
 | [../store-listing/](../store-listing/) | Тексты для Google Play (ru/en), Data Safety, App content, release notes, иконка 512×512, feature graphic 1024×500, 8 скриншотов |
 | [../privacy-policy.html](../privacy-policy.html) | Публичная политика конфиденциальности (ru + en) — на неё ссылается `Config.PRIVACY_POLICY_URL` |
 | [../app-ads.txt](../app-ads.txt) | Шаблон файла для подтверждения прав в РСЯ (замените `YOUR_PARTNER_ID`) |
