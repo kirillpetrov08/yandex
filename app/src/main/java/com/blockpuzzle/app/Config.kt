@@ -8,10 +8,12 @@ package com.blockpuzzle.app
 object Config {
     /**
      * Адрес политики конфиденциальности. Готовая страница лежит в корне репозитория:
-     * privacy-policy.html — опубликуйте её на GitHub Pages и вставьте ссылку здесь,
-     * а также укажите в Google Play Console (App content → Privacy policy).
+     * privacy-policy.html — положите её в публичный репозиторий `kirillpetrov08.github.io`
+     * (GitHub Pages пользователя) и вставьте адрес сюда, а также укажите его в Google Play
+     * Console (App content → Privacy policy) и в описании приложения.
+     * Такой адрес даёт короткий корень домена, где РСЯ находит app-ads.txt.
      */
-    const val PRIVACY_POLICY_URL = "https://kirillpetrov08.github.io/yandex/privacy-policy.html"
+    const val PRIVACY_POLICY_URL = "https://kirillpetrov08.github.io/privacy-policy.html"
 
     /** Ссылка на страницу приложения в Google Play (для «оценить» и app-ads.txt). */
     const val PLAY_MARKET_URL = "https://play.google.com/store/apps/details?id=com.blockpuzzle.app"

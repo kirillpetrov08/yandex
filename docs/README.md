@@ -30,6 +30,7 @@
 | [11-sdk-cheatsheet.md](11-sdk-cheatsheet.md) | Шпаргалка по API SDK 8.6: все классы и вызовы |
 | [12-checklist-release.md](12-checklist-release.md) | Чек-листы: перед релизом, перед проверкой РСЯ, приёмка рекламы |
 | [13-troubleshooting.md](13-troubleshooting.md) | Проблемы и решения: реклама не показывается, ошибки, отказы модерации |
+| [14-deploy-beginner.md](14-deploy-beginner.md) | **Гайд для полного новичка**: куда что вводить и где нажимать — от ключа подписи до продакшена |
 | [ci/android.yml](ci/android.yml) | GitHub Actions: сборка APK/AAB в облаке (файл нужно добавить в `.github/workflows/`) |
 
 ## Артефакты для публикации (в корне репозитория)

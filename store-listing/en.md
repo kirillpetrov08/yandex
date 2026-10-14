@@ -47,7 +47,7 @@ SUPPORT
 
 Found a bug or have an idea? Email kirillpetrov08@gmail.com — we read every message.
 
-Privacy policy: https://kirillpetrov08.github.io/yandex/privacy-policy.html
+Privacy policy: https://kirillpetrov08.github.io/privacy-policy.html
 
 The game is free and supported by ads from the Yandex Advertising Network. Ads never appear during a game and never cover the playing field.
 ```

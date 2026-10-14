@@ -40,8 +40,9 @@
 
 ## Privacy policy
 
-- Ссылка: `https://kirillpetrov08.github.io/yandex/privacy-policy.html`
-  (файл `privacy-policy.html` лежит в корне репозитория — включите GitHub Pages).
+- Ссылка: `https://kirillpetrov08.github.io/privacy-policy.html`
+  (файл `privacy-policy.html` из корня репозитория лежит в публичном репозитории
+  `kirillpetrov08.github.io` — там же `app-ads.txt`).
 - Та же ссылка должна быть указана в Store listing → Developer website / Privacy policy.
 
 ## App access

@@ -7,8 +7,8 @@
 
 - Google Play Developer аккаунт (единоразовый платёж $25, для физлиц доступен).
 - JDK 17 и Android Studio (или собранный артефакт из GitHub Actions, см. [ci/android.yml](ci/android.yml)).
-- Публичный сайт (годится GitHub Pages этого же репозитория) — для политики конфиденциальности
-  и файла `app-ads.txt`.
+- Публичный сайт — для политики конфиденциальности и файла `app-ads.txt`
+  (проще всего публичный репозиторий `<логин>.github.io`).
 - Аккаунт РСЯ (partner.yandex.ru) — для реальных ID блоков.
 
 ## Шаг 1. Задайте свои идентификаторы
@@ -154,17 +154,21 @@ ads.nativeUnitId=R-M-XXXXXXX-5
 
 ## Шаг 7. Сайт разработчика, app-ads.txt, политика
 
-1. Включите GitHub Pages: Settings → Pages → Source: `Deploy from a branch`, branch `main`, folder `/ (root)`.
-2. Файлы в корне репозитория уже готовы:
-   - `privacy-policy.html` → `https://<логин>.github.io/<репозиторий>/privacy-policy.html`
-   - `app-ads.txt` → `https://<логин>.github.io/<репозиторий>/app-ads.txt` (замените `YOUR_PARTNER_ID`)
-3. Укажите сайт разработчика в Play Console (Store settings → Developer website) — это адрес,
-   по которому РСЯ будет искать `app-ads.txt`.
-4. Проверьте в браузере, что оба файла открываются без редиректов.
+1. Возьмите файлы `privacy-policy.html` и `app-ads.txt` из корня этого репозитория.
+2. Создайте **публичный** репозиторий с именем `<логин>.github.io` (у нас — `kirillpetrov08.github.io`):
+   GitHub Pages для обычного репозитория на бесплатном плане работает только в публичных
+   репозиториях, а сайт пользователя `<логин>.github.io` даёт короткие адреса в корне домена.
+3. Положите оба файла в корень этого репозитория — сайт включится сам.
+4. Проверьте в браузере:
+   - `https://kirillpetrov08.github.io/privacy-policy.html`
+   - `https://kirillpetrov08.github.io/app-ads.txt` (в нём вы уже заменили `YOUR_PARTNER_ID`)
+5. Укажите сайт разработчика `https://kirillpetrov08.github.io/privacy-policy.html` в Play Console
+   (Store settings → Developer website) — именно по этому домену РСЯ будет искать `app-ads.txt`.
 
-> Нюанс: РСЯ ищет `app-ads.txt` в **корне домена**, а у GitHub Pages проект лежит в подпапке
-> (`/yandex/`). Работает вариант с доменом `kirillpetrov08.github.io` → файл в репозитории
-> `kirillpetrov08.github.io`. Если это неудобно — купите дешёвый домен и положите файл в корень.
+> Почему не подпапка: РСЯ (как и спецификация IAB) ищет `app-ads.txt` в **корне домена**. У сайта
+> проекта адрес выглядит как `<логин>.github.io/<репозиторий>/` — это не корень, поэтому файл
+> нужно держать на сайте пользователя. Если хочется свой бренд — купите домен и положите файлы
+> в его корень.
 
 ## Шаг 8. Продакшен-релиз и первые дни
 
