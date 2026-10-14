@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Верхний левый блок -->
+    <path android:pathData="M34.5,29 h11 a5.5,5.5 0 0 1 5.5,5.5 v11 a5.5,5.5 0 0 1 -5.5,5.5 h-11 a5.5,5.5 0 0 1 -5.5,-5.5 v-11 a5.5,5.5 0 0 1 5.5,-5.5 z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:startX="29" android:startY="29" android:endX="51" android:endY="51" android:type="linear">
+                <item android:offset="0" android:color="#FFFFE07A" />
+                <item android:offset="1" android:color="#FFFFB02E" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Верхний правый блок -->
+    <path android:pathData="M62.5,29 h11 a5.5,5.5 0 0 1 5.5,5.5 v11 a5.5,5.5 0 0 1 -5.5,5.5 h-11 a5.5,5.5 0 0 1 -5.5,-5.5 v-11 a5.5,5.5 0 0 1 5.5,-5.5 z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:startX="57" android:startY="29" android:endX="79" android:endY="51" android:type="linear">
+                <item android:offset="0" android:color="#FF8CF2FF" />
+                <item android:offset="1" android:color="#FF23B7FF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Нижний левый блок -->
+    <path android:pathData="M34.5,57 h11 a5.5,5.5 0 0 1 5.5,5.5 v11 a5.5,5.5 0 0 1 -5.5,5.5 h-11 a5.5,5.5 0 0 1 -5.5,-5.5 v-11 a5.5,5.5 0 0 1 5.5,-5.5 z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:startX="29" android:startY="57" android:endX="51" android:endY="79" android:type="linear">
+                <item android:offset="0" android:color="#FFFF9AD1" />
+                <item android:offset="1" android:color="#FFF8479B" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Нижний правый блок -->
+    <path android:pathData="M62.5,57 h11 a5.5,5.5 0 0 1 5.5,5.5 v11 a5.5,5.5 0 0 1 -5.5,5.5 h-11 a5.5,5.5 0 0 1 -5.5,-5.5 v-11 a5.5,5.5 0 0 1 5.5,-5.5 z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:startX="57" android:startY="57" android:endX="79" android:endY="79" android:type="linear">
+                <item android:offset="0" android:color="#FFC9A6FF" />
+                <item android:offset="1" android:color="#FF7C4DFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Блик -->
+    <path android:pathData="M31,33 h6 a2.6,2.6 0 0 1 2.6,2.6 v3.2 a2.6,2.6 0 0 1 -2.6,2.6 h-6 a2.6,2.6 0 0 1 -2.6,-2.6 v-3.2 a2.6,2.6 0 0 1 2.6,-2.6 z"
+        android:fillColor="#FFFFFF" android:fillAlpha="0.22" />
+</vector>

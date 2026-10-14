@@ -1,0 +1,51 @@
+name: Android CI
+
+on:
+  push:
+    branches: [main, "arena/**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Сборка APK/AAB и тесты
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Установка платформы Android 36
+        run: sdkmanager --install "platforms;android-36" "build-tools;36.0.0" || true
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit-тесты логики игры и рекламных политик
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Debug APK (для установки на телефон)
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Release AAB (для загрузки в Google Play)
+        env:
+          KEYSTORE_FILE: ${{ secrets.KEYSTORE_FILE }}
+        run: ./gradlew bundleRelease --stacktrace
+
+      - name: Артефакты
+        uses: actions/upload-artifact@v4
+        with:
+          name: block-puzzle-build
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/bundle/release/*.aab
+            app/build/reports/tests/testDebugUnitTest/**
+          if-no-files-found: warn

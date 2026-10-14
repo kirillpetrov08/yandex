@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="sharedpref" path="block_puzzle_prefs.xml" />
+        <exclude domain="sharedpref" path="yandex_mobile_ads.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="sharedpref" path="block_puzzle_prefs.xml" />
+    </device-transfer>
+</data-extraction-rules>

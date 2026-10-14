@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Реклама РСЯ требует доступ к сети. Разрешение AD_ID добавляет сам SDK Яндекса (v4.5+). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:name=".BlockPuzzleApp"
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.BlockPuzzle">
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode|smallestScreenSize"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.BlockPuzzle">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+        Ограничение по возрасту (COPPA / «ребёнок»). Раскомментируйте, если приложение
+        адресовано детям и персональные данные ребёнка нельзя использовать в монетизации:
+
+        <meta-data
+            android:name="@string/yandex_mobileads_age_restricted_user"
+            android:value="true" />
+        -->
+
+        <!-- Ручное управление инициализацией SDK (по умолчанию SDK инициализируется сам).
+             Мы инициализируем SDK вручную в BlockPuzzleApp, чтобы сначала получить согласие. -->
+        <meta-data
+            android:name="com.yandex.mobile.ads.AUTOMATIC_SDK_INITIALIZATION"
+            android:value="false" />
+    </application>
+</manifest>

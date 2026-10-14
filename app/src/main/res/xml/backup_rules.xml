@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Сохраняем только прогресс игрока, но не рекламные/аналитические данные. -->
+    <include domain="sharedpref" path="block_puzzle_prefs.xml" />
+    <exclude domain="sharedpref" path="yandex_mobile_ads.xml" />
+</full-backup-content>
