@@ -27,12 +27,13 @@ class GameEngineTest {
     fun `placement writes cells and consumes tray slot`() {
         val game = engine()
         game.newGame()
-        game.setTrayForTest(listOf(Shapes.single, null, null))
+        game.setTrayForTest(listOf(Shapes.single, Shapes.single, null))
         val result = game.place(0, 3, 4)
         assertNotNull(result)
         assertEquals(1, result!!.placedCellIndices.size)
         assertEquals(1, game.cellValue(game.index(3, 4)))
         assertNull(game.tray[0])
+        assertEquals(1, game.tray.count { it != null })
         assertEquals(1, game.score)
     }
 
@@ -74,7 +75,7 @@ class GameEngineTest {
         game.newGame()
         // Заполнены 7 столбцов из 8 во всех рядах: не хватает только правого столбца
         val cells = IntArray(GRID_SIZE * GRID_SIZE)
-        for (row in 0 until GRID_SIZE) {
+        for (row in 0 until 3) {
             for (col in 0 until GRID_SIZE - 1) cells[game.index(row, col)] = 2
         }
         game.setCellsForTest(cells)
