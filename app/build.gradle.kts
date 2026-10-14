@@ -51,7 +51,7 @@ android {
     signingConfigs {
         if (hasUploadKey) {
             create("release") {
-                storeFile = file(envKeystorePath ?: keystoreProps.getProperty("storeFile"))
+                storeFile = rootProject.file(envKeystorePath ?: keystoreProps.getProperty("storeFile"))
                 storePassword = System.getenv("KEYSTORE_PASSWORD") ?: keystoreProps.getProperty("storePassword")
                 keyAlias = System.getenv("KEY_ALIAS") ?: keystoreProps.getProperty("keyAlias")
                 keyPassword = System.getenv("KEY_PASSWORD") ?: keystoreProps.getProperty("keyPassword")
