@@ -22,6 +22,13 @@ val keystoreProps = Properties().apply {
 val envKeystorePath: String? = System.getenv("KEYSTORE_FILE")
 val hasUploadKey: Boolean = keystorePropsFile.exists() || envKeystorePath != null
 
+/* Тестовая сборка по умолчанию использует демо-блоки Яндекса.
+   Зачем: показы и клики по собственной рекламе на своём устройстве РСЯ расценивает как
+   накрутку и блокирует аккаунт без восстановления. Релизная сборка (та, что уходит в
+   магазины) всегда берёт реальные ID из gradle.properties.
+   Отключается одной строкой в gradle.properties: ads.debugUseDemoIds=false */
+val debugUsesDemoIds: Boolean = prop("ads.debugUseDemoIds").toBoolean()
+
 android {
     namespace = "com.blockpuzzle.app"
     compileSdk = propInt("app.compileSdk")
@@ -64,6 +71,16 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             isMinifyEnabled = false
+
+            // Демо-блоки в тестовой сборке (см. debugUsesDemoIds выше).
+            if (debugUsesDemoIds) {
+                buildConfigField("String", "AD_UNIT_BANNER", "\"demo-banner-yandex\"")
+                buildConfigField("String", "AD_UNIT_INTERSTITIAL", "\"demo-interstitial-yandex\"")
+                buildConfigField("String", "AD_UNIT_REWARDED", "\"demo-rewarded-yandex\"")
+                buildConfigField("String", "AD_UNIT_APP_OPEN", "\"demo-appopenad-yandex\"")
+                buildConfigField("String", "AD_UNIT_NATIVE", "\"demo-native-content-yandex\"")
+                buildConfigField("boolean", "ADS_TEST_MODE", "true")
+            }
         }
         release {
             isMinifyEnabled = true
