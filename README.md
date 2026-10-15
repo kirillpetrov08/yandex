@@ -54,7 +54,7 @@ EOF
 | `gradle.properties` | `ads.testMode=false` и пять реальных ID блоков из РСЯ (`R-M-XXXXXXX-Y`) |
 | `gradle.properties` | `app.applicationId` — меняется один раз и навсегда; `app.versionCode`/`app.versionName` |
 | `Config.kt` | `PRIVACY_POLICY_URL`, `PLAY_MARKET_URL`, `SUPPORT_EMAIL` |
-| `app-ads.txt` | вместо `YOUR_PARTNER_ID` вставьте ID партнёра из интерфейса РСЯ |
+| `app-ads.txt` | шаблон файла подтверждения прав в РСЯ (строки вставляются из фрагмента, скачанного в РСЯ) |
 | `store-listing/` | при желании — свои тексты и графика (готовые уже проходят требования Play) |
 
 Полный чек-лист: `docs/12-checklist-release.md`. Пошаговая публикация: [`DEPLOY.md`](DEPLOY.md)
