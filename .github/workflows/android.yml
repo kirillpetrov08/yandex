@@ -68,7 +68,7 @@ jobs:
         run: ./gradlew testDebugUnitTest --stacktrace
 
       - name: Debug APK (для установки на телефон)
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug assembleRelease --stacktrace
 
       - name: Release AAB (для загрузки в Google Play)
         env:
