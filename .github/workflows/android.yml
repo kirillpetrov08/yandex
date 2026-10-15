@@ -68,14 +68,14 @@ jobs:
         run: ./gradlew testDebugUnitTest --stacktrace
 
       - name: Debug APK (для установки на телефон)
-        run: ./gradlew assembleDebug assembleRelease --stacktrace
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Release AAB (для загрузки в Google Play)
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease --stacktrace
+        run: ./gradlew bundleRelease assembleRelease --stacktrace
 
       - name: Проверка подписи AAB
         if: steps.keystore.outputs.signed == 'true'
