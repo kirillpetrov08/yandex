@@ -123,8 +123,9 @@ base64 -w0 upload-keystore.jks      # скопируйте вывод целик
 2. **Add file → Upload files** → перетащите `privacy-policy.html` и `app-ads.txt` → Commit changes.
 3. Через минуту проверьте в браузере: `https://kirillpetrov08.github.io/privacy-policy.html`
    и `https://kirillpetrov08.github.io/app-ads.txt`.
-4. В РСЯ (**Настройки → Общие → app-ads.txt**) возьмите фрагмент своего аккаунта и впишите ID
-   партнёра в `app-ads.txt` вместо `YOUR_PARTNER_ID`, затем обновите файл в репозитории сайта.
+4. В РСЯ (**Настройки → Общие → app-ads.txt**) скачайте фрагмент своего аккаунта и вставьте его
+   строки в `app-ads.txt` **как есть** (удалив строку-заглушку), затем обновите файл в репозитории
+   сайта. Первое поле в строке — домен рекламной системы (`yandex.com`), второе — ваш ID партнёра.
 5. Укажите сайт разработчика в Play Console (Store settings → Developer website) — это адрес,
    по которому РСЯ будет искать файл.
 
