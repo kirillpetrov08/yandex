@@ -2,6 +2,10 @@ package com.blockpuzzle.app.ui.game
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -509,8 +513,16 @@ private fun GameHud(
 
 @Composable
 private fun ComboBanner(flash: ComboFlash, theme: BoardTheme) {
+    val pulse = rememberInfiniteTransition(label = "combo-pulse")
+        .animateFloat(
+            initialValue = 0.97f,
+            targetValue = 1.035f,
+            animationSpec = infiniteRepeatable(tween(420), repeatMode = RepeatMode.Reverse),
+            label = "combo-scale",
+        ).value
     Row(
         modifier = Modifier
+            .graphicsLayer { scaleX = pulse; scaleY = pulse }
             .clip(RoundedCornerShape(16.dp))
             .background(theme.accent.copy(alpha = 0.18f))
             .padding(horizontal = 16.dp, vertical = 8.dp),

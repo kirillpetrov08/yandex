@@ -22,6 +22,8 @@ import kotlin.math.min
 /** Рисует «объёмный» блок со светлой верхней гранью — визуальная фишка игры. */
 fun DrawScope.drawBlock(center: Offset, sizePx: Float, color: Color, cornerPx: Float) {
     val radius = CornerRadius(cornerPx, cornerPx)
+    // A restrained colored halo makes adjacent colors feel luminous without a bitmap blur.
+    drawCircle(color = color.copy(alpha = 0.075f), radius = sizePx * 0.66f, center = center)
     val topLeft = Offset(center.x - sizePx / 2f, center.y - sizePx / 2f)
     // Мягкая тень, нижний кант и верхний блик дают объём без bitmap-ресурсов.
     drawRoundRect(
@@ -153,6 +155,13 @@ fun BoardCanvas(
                 val center = Offset(col * cell + cell / 2f, row * cell + cell / 2f)
                 val progress = min(1f, pop.progress)
                 val scale = 1f + 0.35f * progress
+                val ringRadius = block * (0.28f + progress * 0.9f)
+                drawCircle(
+                    color = theme.accent.copy(alpha = 0.72f * (1f - progress)),
+                    radius = ringRadius,
+                    center = center,
+                    style = Stroke(width = (cell * 0.055f * (1f - progress * 0.45f)).coerceAtLeast(1f)),
+                )
                 drawBlock(center, block * scale, Color.White.copy(alpha = 0.75f * (1f - progress)), gap * 1.6f)
             }
         }
