@@ -89,12 +89,15 @@ class GameEngine(private val random: Random = Random.Default) {
     /** Помещается ли фигура из слота [trayIndex] в позицию (row, col) левым верхним углом. */
     fun canPlace(trayIndex: Int, row: Int, col: Int): Boolean {
         val shape = traySlots.getOrNull(trayIndex) ?: return false
+        return canPlaceShape(shape, row, col)
+    }
+
+    private fun canPlaceShape(shape: Shape, row: Int, col: Int): Boolean {
         if (row < 0 || col < 0) return false
         if (row + shape.height > GRID_SIZE || col + shape.width > GRID_SIZE) return false
         for (r in 0 until shape.height) {
             for (c in 0 until shape.width) {
-                if (!shape.isFilled(r, c)) continue
-                if (cells[index(row + r, col + c)] != 0) return false
+                if (shape.isFilled(r, c) && cells[index(row + r, col + c)] != 0) return false
             }
         }
         return true
@@ -176,6 +179,36 @@ class GameEngine(private val random: Random = Random.Default) {
             comboMultiplier = multiplier,
             isCombo = isCombo,
         )
+    }
+
+    /**
+     * Слегка «прилипает» к ближайшей свободной клетке при неточном отпускании.
+     * Никогда не уводит фигуру дальше maxDistance клеток от точки сброса.
+     */
+    fun nearestLegalPlacement(
+        trayIndex: Int,
+        row: Int,
+        col: Int,
+        maxDistance: Int = 1,
+    ): Pair<Int, Int>? {
+        if (traySlots.getOrNull(trayIndex) == null) return null
+        var best: Pair<Int, Int>? = null
+        var bestDistance = Int.MAX_VALUE
+        var bestClears = Int.MIN_VALUE
+        for (candidateRow in 0 until GRID_SIZE) {
+            for (candidateCol in 0 until GRID_SIZE) {
+                val distance = kotlin.math.abs(candidateRow - row) + kotlin.math.abs(candidateCol - col)
+                if (distance > maxDistance || distance > bestDistance) continue
+                if (!canPlace(trayIndex, candidateRow, candidateCol)) continue
+                val clears = countLinesIfPlaced(trayIndex, candidateRow, candidateCol)
+                if (distance < bestDistance || clears > bestClears) {
+                    best = candidateRow to candidateCol
+                    bestDistance = distance
+                    bestClears = clears
+                }
+            }
+        }
+        return best
     }
 
     /** Доступен ли откат последнего хода. */
@@ -270,6 +303,10 @@ class GameEngine(private val random: Random = Random.Default) {
     fun countLinesIfPlaced(trayIndex: Int, row: Int, col: Int): Int {
         val shape = traySlots.getOrNull(trayIndex) ?: return 0
         if (!canPlace(trayIndex, row, col)) return 0
+        return countLinesForShape(shape, row, col)
+    }
+
+    private fun countLinesForShape(shape: Shape, row: Int, col: Int): Int {
         var result = 0
         for (r in 0 until shape.height) {
             val gridRow = row + r
@@ -323,6 +360,13 @@ class GameEngine(private val random: Random = Random.Default) {
     private fun generateTray(forceEasyStart: Boolean): List<Shape> {
         val fillRatio = filledCount().toFloat() / cells.size
         val gentleOpening = forceEasyStart || piecesPlaced < GENTLE_OPENING_PLACEMENTS
+        val highestMobility = if (gentleOpening) Int.MAX_VALUE else Shapes.all.maxOf(::legalPlacementCount)
+        val needsAHand = !gentleOpening && (fillRatio >= ASSIST_DENSITY_THRESHOLD || highestMobility <= 4)
+        // A little invisible assistance at risky moments: retain the puzzle, but sometimes
+        // bias the next tray toward shapes that still fit and can clear lines.
+        if (needsAHand && random.nextFloat() < ASSIST_CHANCE) {
+            generateHelpfulTray(fillRatio)?.let { return it }
+        }
         repeat(MAX_GENERATION_ATTEMPTS) {
             val candidate = List(TRAY_SIZE) { pickShape(fillRatio, gentleOpening) }
             // В первые три раздачи стараемся дать минимум две доступные фигуры,
@@ -333,6 +377,42 @@ class GameEngine(private val random: Random = Random.Default) {
         }
         // Страховка: всегда можно поставить одиночный блок.
         return List(TRAY_SIZE) { Shapes.single }
+    }
+
+    private fun generateHelpfulTray(fillRatio: Float): List<Shape>? {
+        val useful = Shapes.all.mapNotNull { shape ->
+            val moves = legalPlacementCount(shape)
+            if (moves == 0) return@mapNotNull null
+            var bestClear = 0
+            for (row in 0..(GRID_SIZE - shape.height)) {
+                for (col in 0..(GRID_SIZE - shape.width)) {
+                    if (canPlaceShape(shape, row, col)) {
+                        bestClear = maxOf(bestClear, countLinesForShape(shape, row, col))
+                    }
+                }
+            }
+            val utility = bestClear * 20 + minOf(moves, 10) * 2 + if (shape.cellCount <= 4) 3 else 0
+            shape to utility
+        }.sortedByDescending { it.second }
+
+        if (useful.isEmpty()) return null
+        val rescuePool = useful.take(ASSIST_POOL_SIZE).map { it.first }
+        val first = rescuePool[random.nextInt(rescuePool.size)]
+        val secondPool = rescuePool.filterNot { it == first }.ifEmpty { rescuePool }
+        val second = secondPool[random.nextInt(secondPool.size)]
+        val third = pickShape(fillRatio, easy = false)
+        return listOf(first, second, third)
+    }
+
+    private fun legalPlacementCount(shape: Shape): Int {
+        if (shape.width > GRID_SIZE || shape.height > GRID_SIZE) return 0
+        var count = 0
+        for (row in 0..(GRID_SIZE - shape.height)) {
+            for (col in 0..(GRID_SIZE - shape.width)) {
+                if (canPlaceShape(shape, row, col)) count++
+            }
+        }
+        return count
     }
 
     private fun fitsAnywhere(shape: Shape): Boolean {
@@ -393,5 +473,8 @@ class GameEngine(private val random: Random = Random.Default) {
         const val MAX_COMBO_MULTIPLIER = 8
         private const val MAX_GENERATION_ATTEMPTS = 40
         private const val GENTLE_OPENING_PLACEMENTS = 9
+        private const val ASSIST_DENSITY_THRESHOLD = 0.48f
+        private const val ASSIST_CHANCE = 0.38f
+        private const val ASSIST_POOL_SIZE = 8
     }
 }

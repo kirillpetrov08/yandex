@@ -181,6 +181,7 @@ fun GameScreen(
                             shapeWidth = shape.width,
                             shapeHeight = shape.height,
                         )
+                        controller.playPickup()
                         ghostCells = emptyList()
                         ghostValid = false
                     },
@@ -191,8 +192,15 @@ fun GameScreen(
                         drag = moved
                         val target = targetCell(moved, boardOrigin - rootOrigin, cellSizePx)
                         if (target != null) {
-                            ghostCells = controller.engine.previewCells(moved.trayIndex, target.first, target.second)
-                            ghostValid = controller.engine.canPlace(moved.trayIndex, target.first, target.second)
+                            val snappedTarget = controller.engine.nearestLegalPlacement(
+                                moved.trayIndex,
+                                target.first,
+                                target.second,
+                                maxDistance = 1,
+                            )
+                            val previewTarget = snappedTarget ?: target
+                            ghostCells = controller.engine.previewCells(moved.trayIndex, previewTarget.first, previewTarget.second)
+                            ghostValid = snappedTarget != null
                         } else {
                             ghostCells = emptyList()
                             ghostValid = false
@@ -205,7 +213,10 @@ fun GameScreen(
                         ghostValid = false
                         if (current != null) {
                             val target = targetCell(current, boardOrigin - rootOrigin, cellSizePx)
-                            if (target != null && controller.place(current.trayIndex, target.first, target.second)) {
+                            val snappedTarget = target?.let {
+                                controller.engine.nearestLegalPlacement(current.trayIndex, it.first, it.second, maxDistance = 1)
+                            }
+                            if (snappedTarget != null && controller.place(current.trayIndex, snappedTarget.first, snappedTarget.second)) {
                                 if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             }
                         }

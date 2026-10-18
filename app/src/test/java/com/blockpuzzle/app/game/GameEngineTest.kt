@@ -50,6 +50,19 @@ class GameEngineTest {
     }
 
     @Test
+    fun `drop assist snaps one cell to the nearest legal placement`() {
+        val game = engine()
+        game.newGame()
+        game.setTrayForTest(listOf(Shapes.single, null, null))
+        val cells = IntArray(GRID_SIZE * GRID_SIZE)
+        cells[game.index(0, 0)] = 1
+        game.setCellsForTest(cells)
+
+        assertEquals(0 to 1, game.nearestLegalPlacement(0, 0, 0, maxDistance = 1))
+        assertNull(game.nearestLegalPlacement(0, 0, 0, maxDistance = 0))
+    }
+
+    @Test
     fun `undo restores board score and piece tray after a move`() {
         val game = engine(seed = 17)
         game.newGame()

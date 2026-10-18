@@ -66,7 +66,7 @@ class SfxEngine {
         return track
     }
 
-    /** Простая аддитивная генерация: тон + экспоненциальное затухание + обертоны. */
+    /** Богатый короткий синтез: удар, гармоники и отдельная форма огибающей по событию. */
     private fun synthesize(sound: Sound): ShortArray {
         val durationSeconds = sound.durationMs / 1000.0
         val totalSamples = (SAMPLE_RATE * durationSeconds).toInt().coerceAtLeast(1)
@@ -74,11 +74,33 @@ class SfxEngine {
         for (i in 0 until totalSamples) {
             val t = i.toDouble() / SAMPLE_RATE
             val progress = i.toDouble() / totalSamples
-            val envelope = exp(-sound.decay * progress)
-            val freq = sound.startFrequency + (sound.endFrequency - sound.startFrequency) * progress
-            val fundamental = sin(2 * PI * freq * t)
-            val harmonic = 0.35 * sin(2 * PI * freq * 2.0 * t)
-            val value = (fundamental + harmonic) * envelope * sound.volume
+            val attack = (progress / 0.035).coerceIn(0.0, 1.0)
+            val envelope = attack * exp(-sound.decay * progress)
+            // Интегрированный sweep: заметно более гладкий pitch bend, без фазового рывка.
+            val phase = 2.0 * PI * (
+                sound.startFrequency * t +
+                    0.5 * (sound.endFrequency - sound.startFrequency) * t * progress
+                )
+            val fundamental = sin(phase)
+            val second = sin(phase * 2.0 + 0.16)
+            val third = sin(phase * 3.0 + 0.31)
+            val sub = sin(phase * 0.5)
+            val accent = when (sound) {
+                Sound.PLACE, Sound.PICKUP -> 0.22 * second + 0.09 * third
+                Sound.CLEAR -> 0.27 * second + 0.18 * sin(phase * 1.5)
+                Sound.COMBO -> 0.3 * second + 0.2 * third + 0.12 * sin(phase * 1.5)
+                Sound.FAIL -> 0.26 * sub + 0.08 * second
+                Sound.COIN -> 0.2 * second + 0.16 * third
+                Sound.CLICK -> 0.12 * second
+                Sound.REJECT -> 0.18 * second + 0.13 * sub
+            }
+            val transient = when (sound) {
+                Sound.PLACE -> sin(2.0 * PI * 1550.0 * t) * exp(-progress * 34.0) * 0.14
+                Sound.CLEAR, Sound.COMBO -> sin(2.0 * PI * 2100.0 * t) * exp(-progress * 16.0) * 0.08
+                Sound.REJECT -> sin(2.0 * PI * 95.0 * t) * exp(-progress * 11.0) * 0.24
+                else -> 0.0
+            }
+            val value = (fundamental * 0.72 + accent + transient) * envelope * sound.volume
             data[i] = (value.coerceIn(-1.0, 1.0) * Short.MAX_VALUE).toInt().toShort()
         }
         return data
@@ -97,6 +119,8 @@ class SfxEngine {
         FAIL(220, 220.0, 110.0, 3.0, 0.35),
         COIN(160, 1046.0, 1568.0, 4.5, 0.35),
         CLICK(40, 300.0, 260.0, 9.0, 0.28),
+        PICKUP(85, 420.0, 690.0, 5.2, 0.24),
+        REJECT(95, 185.0, 125.0, 7.0, 0.24),
     }
 
     companion object {

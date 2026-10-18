@@ -93,7 +93,10 @@ class GameController(
 
     /** @return true, если ход сделан. */
     fun place(trayIndex: Int, row: Int, col: Int): Boolean {
-        val result = engine.place(trayIndex, row, col) ?: return false
+        val result = engine.place(trayIndex, row, col) ?: run {
+            sfx.play(SfxEngine.Sound.REJECT)
+            return false
+        }
         lastMove = result
         moveCounter++
         sync()
@@ -109,6 +112,10 @@ class GameController(
             sfx.play(SfxEngine.Sound.FAIL)
         }
         return true
+    }
+
+    fun playPickup() {
+        sfx.play(SfxEngine.Sound.PICKUP)
     }
 
     /** Один бесплатный откат на партию — помогает исправить случайный ход. */

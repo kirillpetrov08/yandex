@@ -8,9 +8,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.blockpuzzle.app.R
 
 /** Палитра игрового поля: 7 цветов фигур + фон доски + общий фон экрана. */
 data class BoardTheme(
@@ -117,18 +119,18 @@ data class ThemeItem(val theme: BoardTheme, val nameResId: Int, val price: Int)
 val LocalBoardTheme = staticCompositionLocalOf { ClassicTheme }
 
 private val DarkScheme = darkColorScheme(
-    primary = c(0xFFB9A6FF),
-    onPrimary = c(0xFF1B1035),
+    primary = c(0xFFBDA8FF),
+    onPrimary = c(0xFF1A1131),
     primaryContainer = c(0xFF3A2C6E),
     onPrimaryContainer = c(0xFFEDE7FF),
-    secondary = c(0xFF7DE3D4),
+    secondary = c(0xFF78E8D1),
     onSecondary = c(0xFF062A26),
     background = c(0xFF0C0F1F),
-    onBackground = c(0xFFF2F3FA),
+    onBackground = c(0xFFF7F3FF),
     surface = c(0xFF171B31),
-    onSurface = c(0xFFF2F3FA),
+    onSurface = c(0xFFF3F0FF),
     surfaceVariant = c(0xFF232A4A),
-    onSurfaceVariant = c(0xFFBFC4DD),
+    onSurfaceVariant = c(0xFFB8C2DF),
     error = c(0xFFFF6B81),
 )
 
@@ -144,13 +146,28 @@ fun BlockPuzzleTheme(theme: BoardTheme = ClassicTheme, content: @Composable () -
     }
 }
 
+private val NunitoFamily = FontFamily(
+    Font(R.font.nunito_regular, FontWeight.Normal),
+    Font(R.font.nunito_extrabold, FontWeight.ExtraBold),
+)
+
+private val DefaultTypography = Typography()
 private val BlockPuzzleTypography = Typography(
-    displayLarge = Typography().displayLarge.copy(fontWeight = FontWeight.Black, letterSpacing = 0.sp),
-    headlineMedium = Typography().headlineMedium.copy(fontWeight = FontWeight.Bold),
-    titleLarge = Typography().titleLarge.copy(fontWeight = FontWeight.Bold),
-    titleMedium = Typography().titleMedium.copy(fontWeight = FontWeight.SemiBold),
-    labelLarge = Typography().labelLarge.copy(fontWeight = FontWeight.SemiBold, letterSpacing = 0.5.sp),
-    bodyMedium = Typography().bodyMedium.copy(fontFamily = FontFamily.SansSerif),
+    displayLarge = DefaultTypography.displayLarge.copy(fontFamily = NunitoFamily, fontWeight = FontWeight.Black, letterSpacing = (-0.4).sp),
+    displayMedium = DefaultTypography.displayMedium.copy(fontFamily = NunitoFamily),
+    displaySmall = DefaultTypography.displaySmall.copy(fontFamily = NunitoFamily),
+    headlineLarge = DefaultTypography.headlineLarge.copy(fontFamily = NunitoFamily),
+    headlineMedium = DefaultTypography.headlineMedium.copy(fontFamily = NunitoFamily, fontWeight = FontWeight.Bold),
+    headlineSmall = DefaultTypography.headlineSmall.copy(fontFamily = NunitoFamily),
+    titleLarge = DefaultTypography.titleLarge.copy(fontFamily = NunitoFamily, fontWeight = FontWeight.Bold),
+    titleMedium = DefaultTypography.titleMedium.copy(fontFamily = NunitoFamily, fontWeight = FontWeight.SemiBold),
+    titleSmall = DefaultTypography.titleSmall.copy(fontFamily = NunitoFamily),
+    bodyLarge = DefaultTypography.bodyLarge.copy(fontFamily = NunitoFamily),
+    bodyMedium = DefaultTypography.bodyMedium.copy(fontFamily = NunitoFamily),
+    bodySmall = DefaultTypography.bodySmall.copy(fontFamily = NunitoFamily),
+    labelLarge = DefaultTypography.labelLarge.copy(fontFamily = NunitoFamily, fontWeight = FontWeight.Bold, letterSpacing = 0.35.sp),
+    labelMedium = DefaultTypography.labelMedium.copy(fontFamily = NunitoFamily),
+    labelSmall = DefaultTypography.labelSmall.copy(fontFamily = NunitoFamily),
 )
 
 /** Общие размеры интерфейса. */
