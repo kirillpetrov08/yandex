@@ -40,6 +40,9 @@ class GameController(
         private set
     var gameOver by mutableStateOf(false)
         private set
+    var canUndo by mutableStateOf(false)
+        private set
+    private var undoUsed = false
     var coinsEarned by mutableIntStateOf(0)
         private set
     var continueGranted by mutableStateOf(false)
@@ -76,6 +79,7 @@ class GameController(
         moveCounter = 0
         continueGranted = false
         doubleCoinsGranted = false
+        undoUsed = false
         resultSaved = false
         savedScore = 0
         savedLines = 0
@@ -104,6 +108,18 @@ class GameController(
             coinsEarned = engine.coinsEarned()
             sfx.play(SfxEngine.Sound.FAIL)
         }
+        return true
+    }
+
+    /** Один бесплатный откат на партию — помогает исправить случайный ход. */
+    fun undoLastMove(): Boolean {
+        if (undoUsed || !engine.undoLastMove()) return false
+        undoUsed = true
+        fx.clearAll()
+        comboFlash = null
+        lastMove = null
+        sync()
+        sfx.play(SfxEngine.Sound.CLICK)
         return true
     }
 
@@ -185,5 +201,6 @@ class GameController(
         lines = engine.lines
         combo = engine.combo
         gameOver = engine.isGameOver
+        canUndo = !undoUsed && engine.canUndoLastMove && !gameOver
     }
 }

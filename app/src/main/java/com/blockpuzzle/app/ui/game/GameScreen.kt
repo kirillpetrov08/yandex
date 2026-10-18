@@ -1,6 +1,8 @@
 package com.blockpuzzle.app.ui.game
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -48,6 +50,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import com.blockpuzzle.app.R
 import com.blockpuzzle.app.game.GRID_SIZE
 import com.blockpuzzle.app.game.TRAY_SIZE
@@ -76,6 +80,7 @@ fun GameScreen(
     onContinueRewardClick: () -> Unit,
     onDoubleCoinsRewardClick: () -> Unit,
     onGameFinished: () -> Unit = {},
+    hapticsEnabled: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
     val density = LocalDensity.current
@@ -102,9 +107,10 @@ fun GameScreen(
     val trayCellPx = if (traySlotWidthPx > 0f) minOf(traySlotWidthPx / 5.2f, trayHeightPx / 5.2f) else 0f
 
     // Один кадровый цикл на все анимации: дёшево и предсказуемо по нагрузке.
-    LaunchedEffect(Unit) {
+    LaunchedEffect(controller.fx.hasActiveEffects) {
+        if (!controller.fx.hasActiveEffects) return@LaunchedEffect
         var previous = 0L
-        while (true) {
+        while (controller.fx.hasActiveEffects) {
             withFrameNanos { now ->
                 if (previous != 0L) {
                     val dt = ((now - previous) / 1_000_000_000.0).toFloat().coerceAtMost(0.05f)
@@ -136,8 +142,8 @@ fun GameScreen(
                 text = "+$gained",
                 color = theme.accent,
             )
-            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-        } else {
+            if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+        } else if (hapticsEnabled) {
             haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         }
         controller.consumeLastMove()
@@ -200,7 +206,7 @@ fun GameScreen(
                         if (current != null) {
                             val target = targetCell(current, boardOrigin - rootOrigin, cellSizePx)
                             if (target != null && controller.place(current.trayIndex, target.first, target.second)) {
-                                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                             }
                         }
                     },
@@ -225,6 +231,8 @@ fun GameScreen(
                 best = maxOf(best, controller.score),
                 coins = coins,
                 lines = controller.lines,
+                canUndo = controller.canUndo,
+                onUndo = { controller.undoLastMove() },
                 onPause = { showQuitDialog = true },
             )
 
@@ -271,7 +279,13 @@ fun GameScreen(
                 }
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.game_tray_hint),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(6.dp))
 
             Row(
                 modifier = Modifier
@@ -298,7 +312,7 @@ fun GameScreen(
                                 if (shape == null) return@pointerInput
                                 detectTapGestures {
                                     if (controller.autoPlace(slot)) {
-                                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        if (hapticsEnabled) haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                                     }
                                 }
                             },
@@ -404,8 +418,15 @@ private fun GameHud(
     best: Int,
     coins: Int,
     lines: Int,
+    canUndo: Boolean,
+    onUndo: () -> Unit,
     onPause: () -> Unit,
 ) {
+    val undoLabel = stringResource(R.string.game_undo)
+    val pauseLabel = stringResource(R.string.game_pause_accessibility)
+    val displayedScore by animateIntAsState(targetValue = score, animationSpec = tween(260), label = "score")
+    val displayedBest by animateIntAsState(targetValue = best, animationSpec = tween(320), label = "best")
+    val displayedLines by animateIntAsState(targetValue = lines, animationSpec = tween(260), label = "lines")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -419,7 +440,7 @@ private fun GameHud(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = score.toString(),
+                text = displayedScore.toString(),
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Black,
                 color = MaterialTheme.colorScheme.onBackground,
@@ -432,13 +453,13 @@ private fun GameHud(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
-                text = best.toString(),
+                text = displayedBest.toString(),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text = stringResource(R.string.game_lines_cleared, lines),
+                text = stringResource(R.string.game_lines_cleared, displayedLines),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -447,15 +468,29 @@ private fun GameHud(
         Column(horizontalAlignment = Alignment.End) {
             CoinBadge(coins = coins)
             Spacer(Modifier.height(6.dp))
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(Color(0x22FFFFFF))
-                    .clickable(onClick = onPause),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text("II", color = Color.White, fontWeight = FontWeight.Bold)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(if (canUndo) Color(0xFF3A7E79) else Color(0x18FFFFFF))
+                        .clickable(enabled = canUndo, onClick = onUndo)
+                        .semantics { contentDescription = undoLabel },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("↶", color = if (canUndo) Color.White else Color(0x66FFFFFF), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                }
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .background(Color(0x22FFFFFF))
+                        .clickable(onClick = onPause)
+                        .semantics { contentDescription = pauseLabel },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("Ⅱ", color = Color.White, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

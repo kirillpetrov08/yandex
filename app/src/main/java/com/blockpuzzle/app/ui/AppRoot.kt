@@ -125,6 +125,7 @@ fun AppRoot(
                     coins = player.coins,
                     best = player.bestScore,
                     rewardedReady = rewardedState == AdLoadState.READY,
+                    hapticsEnabled = settings.haptics,
                     onGameFinished = { Ads.onGameFinished() },
                     onExitToMenu = { screen = Screen.Menu },
                     onPlayAgain = {

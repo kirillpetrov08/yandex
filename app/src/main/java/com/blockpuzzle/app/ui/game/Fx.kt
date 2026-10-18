@@ -2,7 +2,9 @@ package com.blockpuzzle.app.ui.game
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -59,17 +61,27 @@ class FxController {
 
     var shake by mutableFloatStateOf(0f)
 
+    /** Invalidates the Canvas while transient particle/pop values are being advanced. */
+    var animationFrame by mutableIntStateOf(0)
+        private set
+    var hasActiveEffects by mutableStateOf(false)
+        private set
+
     private var idCounter = 0L
 
     fun addCellPops(indices: List<Int>, isClear: Boolean = false) {
         indices.forEach { index -> cellPops.add(CellPop(cellIndex = index, isClear = isClear)) }
+        if (indices.isNotEmpty()) hasActiveEffects = true
     }
 
     fun addScorePop(position: Offset, text: String, color: Color) {
         pops.add(ScorePop(id = idCounter++, position = position, text = text, color = color))
+        hasActiveEffects = true
     }
 
     fun burst(center: Offset, color: Color, amount: Int = 18, power: Float = 1f) {
+        if (amount <= 0) return
+        hasActiveEffects = true
         repeat(amount) {
             val angle = Random.nextFloat() * 2f * Math.PI.toFloat()
             val speed = (140f + Random.nextFloat() * 420f) * power
@@ -89,10 +101,13 @@ class FxController {
 
     fun shake(power: Float) {
         shake = maxOf(shake, power)
+        if (power > 0f) hasActiveEffects = true
     }
 
     /** Один кадр анимации: [dtSeconds] — длительность кадра. */
     fun step(dtSeconds: Float, gravity: Float = 1400f) {
+        val hadTransientEffects = pops.isNotEmpty() || particles.isNotEmpty() || cellPops.isNotEmpty() || shake > 0f
+        if (hadTransientEffects) animationFrame++
         var i = 0
         while (i < pops.size) {
             val pop = pops[i]
@@ -121,6 +136,7 @@ class FxController {
         }
 
         if (shake > 0f) shake = (shake - dtSeconds * 6f).coerceAtLeast(0f)
+        hasActiveEffects = pops.isNotEmpty() || particles.isNotEmpty() || cellPops.isNotEmpty() || shake > 0f
     }
 
     fun clearAll() {
@@ -128,5 +144,7 @@ class FxController {
         particles.clear()
         cellPops.clear()
         shake = 0f
+        hasActiveEffects = false
+        animationFrame++
     }
 }

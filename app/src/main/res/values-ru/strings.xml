@@ -43,6 +43,9 @@
     <string name="game_quit_leave">Выйти</string>
     <string name="game_no_moves">Ходов больше нет</string>
     <string name="game_lines_cleared">Линии: %1$d</string>
+    <string name="game_undo">Отменить последний ход</string>
+    <string name="game_pause_accessibility">Пауза</string>
+    <string name="game_tray_hint">Перетащите блок или коснитесь фигуры для быстрой установки</string>
 
     <!-- Реклама -->
     <string name="ads_loading">Загружаем рекламу…</string>
@@ -129,13 +132,13 @@
     <!-- Обучение -->
     <string name="tutorial_title">Как играть</string>
     <string name="tutorial_1_title">Ставьте блоки</string>
-    <string name="tutorial_1_desc">Перетащите фигуру из лотка на поле 8×8.</string>
+    <string name="tutorial_1_desc">Перетащите фигуру из лотка на поле 8×8 или коснитесь её для быстрой установки.</string>
     <string name="tutorial_2_title">Собирайте линии</string>
     <string name="tutorial_2_desc">Заполните весь ряд или столбец — он исчезнет, а вы получите очки.</string>
     <string name="tutorial_3_title">Делайте комбо</string>
     <string name="tutorial_3_desc">Убирайте несколько линий сразу — за комбо дают больше очков.</string>
     <string name="tutorial_4_title">Следите за лотком</string>
-    <string name="tutorial_4_desc">Игра заканчивается, когда ни одна из трёх фигур не помещается на поле.</string>
+    <string name="tutorial_4_desc">Игра заканчивается, когда ни одна фигура не помещается. Один ход за партию можно отменить кнопкой со стрелкой.</string>
     <string name="tutorial_got_it">Понятно</string>
 
     <!-- Разное -->

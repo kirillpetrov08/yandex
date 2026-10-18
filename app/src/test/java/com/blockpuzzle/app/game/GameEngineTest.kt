@@ -24,6 +24,51 @@ class GameEngineTest {
     }
 
     @Test
+    fun `opening trays stay beginner friendly for first nine placements`() {
+        val game = engine(seed = 41)
+        game.newGame()
+        repeat(3) { batch ->
+            game.tray.forEachIndexed { slot, shape ->
+                if (shape == null) return@forEachIndexed
+                assertTrue("opening piece should be from the gentle pool", shape in Shapes.easySet)
+                var placed = false
+                for (row in 0 until GRID_SIZE) {
+                    for (col in 0 until GRID_SIZE) {
+                        if (!placed && game.canPlace(slot, row, col)) {
+                            assertNotNull(game.place(slot, row, col))
+                            placed = true
+                        }
+                    }
+                }
+                assertTrue("generated opening piece must be placeable", placed)
+            }
+            if (batch < 2) {
+                assertTrue("next opening tray should remain gentle", game.tray.filterNotNull().all { it in Shapes.easySet })
+            }
+        }
+        assertEquals(9, game.piecesPlaced)
+    }
+
+    @Test
+    fun `undo restores board score and piece tray after a move`() {
+        val game = engine(seed = 17)
+        game.newGame()
+        game.setTrayForTest(listOf(Shapes.single, null, null))
+        val beforeTray = game.tray
+        val result = game.place(0, 2, 3)
+        assertNotNull(result)
+        assertEquals(1, game.score)
+        assertTrue(game.canUndoLastMove)
+
+        assertTrue(game.undoLastMove())
+        assertEquals(0, game.score)
+        assertEquals(0, game.filledCount())
+        assertEquals(beforeTray, game.tray)
+        assertFalse(game.canUndoLastMove)
+        assertFalse(game.undoLastMove())
+    }
+
+    @Test
     fun `placement writes cells and consumes tray slot`() {
         val game = engine()
         game.newGame()

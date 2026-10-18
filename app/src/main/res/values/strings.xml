@@ -43,6 +43,9 @@
     <string name="game_quit_leave">Quit</string>
     <string name="game_no_moves">No moves left</string>
     <string name="game_lines_cleared">Lines: %1$d</string>
+    <string name="game_undo">Undo last move</string>
+    <string name="game_pause_accessibility">Pause</string>
+    <string name="game_tray_hint">Drag a block or tap a piece to place it quickly</string>
 
     <!-- Реклама -->
     <string name="ads_loading">Loading ad…</string>
@@ -129,13 +132,13 @@
     <!-- Обучение -->
     <string name="tutorial_title">How to play</string>
     <string name="tutorial_1_title">Place the blocks</string>
-    <string name="tutorial_1_desc">Drag a shape from the tray onto the 8×8 board.</string>
+    <string name="tutorial_1_desc">Drag a shape from the tray onto the 8×8 board, or tap it to place it quickly.</string>
     <string name="tutorial_2_title">Clear lines</string>
     <string name="tutorial_2_desc">Fill a whole row or column to clear it and get points.</string>
     <string name="tutorial_3_title">Make combos</string>
     <string name="tutorial_3_desc">Clear several lines at once for a big combo bonus.</string>
     <string name="tutorial_4_title">Watch the tray</string>
-    <string name="tutorial_4_desc">The game ends when none of the three shapes fits on the board.</string>
+    <string name="tutorial_4_desc">The game ends when no shape fits. Use the arrow button to undo one move per game.</string>
     <string name="tutorial_got_it">Got it</string>
 
     <!-- Разное -->

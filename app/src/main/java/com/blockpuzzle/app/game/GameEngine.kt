@@ -26,6 +26,18 @@ class GameEngine(private val random: Random = Random.Default) {
     val cells = IntArray(GRID_SIZE * GRID_SIZE)
     private val traySlots = arrayOfNulls<Shape>(TRAY_SIZE)
     private val trayColorSlots = IntArray(TRAY_SIZE)
+    private var undoSnapshot: EngineSnapshot? = null
+
+    private data class EngineSnapshot(
+        val cells: IntArray,
+        val tray: Array<Shape?>,
+        val trayColors: IntArray,
+        val score: Int,
+        val lines: Int,
+        val combo: Int,
+        val bestCombo: Int,
+        val piecesPlaced: Int,
+    )
 
     var score: Int = 0
         private set
@@ -36,6 +48,10 @@ class GameEngine(private val random: Random = Random.Default) {
     var combo: Int = 0
         private set
     var bestCombo: Int = 0
+        private set
+
+    /** Число поставленных фигур в этой партии; первые раздачи намеренно мягче. */
+    var piecesPlaced: Int = 0
         private set
     /** Партия закончилась, если ни одна оставшаяся фигура не помещается на поле. */
     val isGameOver: Boolean
@@ -54,7 +70,9 @@ class GameEngine(private val random: Random = Random.Default) {
         lines = 0
         combo = 0
         bestCombo = 0
+        piecesPlaced = 0
         continuesUsed = 0
+        undoSnapshot = null
         fillTray(forceEasyStart = true)
     }
 
@@ -102,6 +120,16 @@ class GameEngine(private val random: Random = Random.Default) {
 
         val shape = traySlots.getOrNull(trayIndex) ?: return null
         val color = trayColorSlots[trayIndex]
+        undoSnapshot = EngineSnapshot(
+            cells = cells.copyOf(),
+            tray = traySlots.copyOf(),
+            trayColors = trayColorSlots.copyOf(),
+            score = score,
+            lines = lines,
+            combo = combo,
+            bestCombo = bestCombo,
+            piecesPlaced = piecesPlaced,
+        )
 
         val placed = ArrayList<Int>(shape.cellCount)
         for (r in 0 until shape.height) {
@@ -115,6 +143,7 @@ class GameEngine(private val random: Random = Random.Default) {
 
         traySlots[trayIndex] = null
         trayColorSlots[trayIndex] = 0
+        piecesPlaced++
 
         // Очистка линий
         val fullRows = (0 until GRID_SIZE).filter { r -> (0 until GRID_SIZE).all { c -> cells[index(r, c)] != 0 } }
@@ -149,6 +178,24 @@ class GameEngine(private val random: Random = Random.Default) {
         )
     }
 
+    /** Доступен ли откат последнего хода. */
+    val canUndoLastMove: Boolean get() = undoSnapshot != null
+
+    /** Восстановить поле, лоток и счёт до последнего хода. */
+    fun undoLastMove(): Boolean {
+        val snapshot = undoSnapshot ?: return false
+        snapshot.cells.copyInto(cells)
+        snapshot.tray.copyInto(traySlots)
+        snapshot.trayColors.copyInto(trayColorSlots)
+        score = snapshot.score
+        lines = snapshot.lines
+        combo = snapshot.combo
+        bestCombo = snapshot.bestCombo
+        piecesPlaced = snapshot.piecesPlaced
+        undoSnapshot = null
+        return true
+    }
+
     /** Есть ли ход хотя бы одной фигурой из лотка. */
     fun hasAnyMove(): Boolean {
         if (traySlots.all { it == null }) return true
@@ -180,6 +227,7 @@ class GameEngine(private val random: Random = Random.Default) {
         }
         combo = 0
         continuesUsed++
+        undoSnapshot = null
         fillTray(forceEasyStart = true)
         if (!hasAnyMove()) {
             // Крайне редкий случай: даже после очистки хода нет — чистим ещё два ряда.
@@ -274,10 +322,14 @@ class GameEngine(private val random: Random = Random.Default) {
      */
     private fun generateTray(forceEasyStart: Boolean): List<Shape> {
         val fillRatio = filledCount().toFloat() / cells.size
+        val gentleOpening = forceEasyStart || piecesPlaced < GENTLE_OPENING_PLACEMENTS
         repeat(MAX_GENERATION_ATTEMPTS) {
-            val candidate = List(TRAY_SIZE) { pickShape(fillRatio, forceEasyStart) }
-            // Лоток принимаем только если хотя бы одна фигура реально помещается.
-            if (candidate.any { fitsAnywhere(it) }) return candidate
+            val candidate = List(TRAY_SIZE) { pickShape(fillRatio, gentleOpening) }
+            // В первые три раздачи стараемся дать минимум две доступные фигуры,
+            // чтобы новичку было время освоиться и выбрать удачный ход.
+            val fittingCount = candidate.count { fitsAnywhere(it) }
+            val requiredFittingPieces = if (gentleOpening) 2 else 1
+            if (fittingCount >= requiredFittingPieces) return candidate
         }
         // Страховка: всегда можно поставить одиночный блок.
         return List(TRAY_SIZE) { Shapes.single }
@@ -340,5 +392,6 @@ class GameEngine(private val random: Random = Random.Default) {
         const val COLOR_COUNT = 7
         const val MAX_COMBO_MULTIPLIER = 8
         private const val MAX_GENERATION_ATTEMPTS = 40
+        private const val GENTLE_OPENING_PLACEMENTS = 9
     }
 }

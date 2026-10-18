@@ -23,25 +23,38 @@ import kotlin.math.min
 fun DrawScope.drawBlock(center: Offset, sizePx: Float, color: Color, cornerPx: Float) {
     val radius = CornerRadius(cornerPx, cornerPx)
     val topLeft = Offset(center.x - sizePx / 2f, center.y - sizePx / 2f)
+    // Мягкая тень, нижний кант и верхний блик дают объём без bitmap-ресурсов.
     drawRoundRect(
-        color = color,
-        topLeft = topLeft,
+        color = Color.Black.copy(alpha = 0.22f),
+        topLeft = Offset(topLeft.x, topLeft.y + sizePx * 0.075f),
         size = Size(sizePx, sizePx),
         cornerRadius = radius,
     )
-    // светлая «шапка»
     drawRoundRect(
-        color = Color.White.copy(alpha = 0.22f),
-        topLeft = Offset(topLeft.x + sizePx * 0.12f, topLeft.y + sizePx * 0.10f),
-        size = Size(sizePx * 0.76f, sizePx * 0.22f),
+        color = color.copy(alpha = 0.72f),
+        topLeft = Offset(topLeft.x, topLeft.y + sizePx * 0.025f),
+        size = Size(sizePx, sizePx * 0.975f),
+        cornerRadius = radius,
+    )
+    drawRoundRect(
+        color = color,
+        topLeft = topLeft,
+        size = Size(sizePx, sizePx * 0.91f),
+        cornerRadius = radius,
+    )
+    // Глянцевая грань и тонкий внутренний блик.
+    drawRoundRect(
+        color = Color.White.copy(alpha = 0.27f),
+        topLeft = Offset(topLeft.x + sizePx * 0.12f, topLeft.y + sizePx * 0.09f),
+        size = Size(sizePx * 0.76f, sizePx * 0.18f),
         cornerRadius = CornerRadius(sizePx * 0.12f, sizePx * 0.12f),
     )
-    // тёмный низ для объёма
     drawRoundRect(
-        color = Color.Black.copy(alpha = 0.18f),
-        topLeft = Offset(topLeft.x + sizePx * 0.12f, topLeft.y + sizePx * 0.68f),
-        size = Size(sizePx * 0.76f, sizePx * 0.20f),
-        cornerRadius = CornerRadius(sizePx * 0.12f, sizePx * 0.12f),
+        color = Color.White.copy(alpha = 0.10f),
+        topLeft = Offset(topLeft.x + sizePx * 0.10f, topLeft.y + sizePx * 0.08f),
+        size = Size(sizePx * 0.80f, sizePx * 0.80f),
+        cornerRadius = radius,
+        style = Stroke(width = (sizePx * 0.018f).coerceAtLeast(1f)),
     )
 }
 
@@ -59,6 +72,10 @@ fun BoardCanvas(
     modifier: Modifier = Modifier,
 ) {
     Canvas(modifier = modifier) {
+        // Observe the animation clock: Fx values are mutable model objects, so the clock
+        // explicitly invalidates this Canvas while any pop, burst, or score label is alive.
+        @Suppress("UNUSED_VARIABLE")
+        val observedAnimationFrame = fx.animationFrame
         val cell = size.width / GRID_SIZE
         val gap = cell * 0.07f
         val block = cell - gap
@@ -66,6 +83,11 @@ fun BoardCanvas(
         drawRoundRect(
             color = theme.boardBackground,
             cornerRadius = CornerRadius(cell * 0.5f, cell * 0.5f),
+        )
+        drawRoundRect(
+            color = Color.White.copy(alpha = 0.035f),
+            cornerRadius = CornerRadius(cell * 0.5f, cell * 0.5f),
+            style = Stroke(width = (cell * 0.035f).coerceAtLeast(1f)),
         )
 
         val emptyColor = theme.boardCellBackground
@@ -81,9 +103,18 @@ fun BoardCanvas(
                     size = Size(block, block),
                     cornerRadius = CornerRadius(gap * 1.6f, gap * 1.6f),
                 )
+                drawRoundRect(
+                    color = Color.White.copy(alpha = 0.025f),
+                    topLeft = Offset(center.x - block / 2f, center.y - block / 2f),
+                    size = Size(block, block),
+                    cornerRadius = CornerRadius(gap * 1.6f, gap * 1.6f),
+                    style = Stroke(width = (cell * 0.018f).coerceAtLeast(1f)),
+                )
             } else {
                 val pop = fx.cellPops.firstOrNull { it.cellIndex == index && !it.isClear }
-                val scale = if (pop == null) 1f else 0.5f + 0.5f * min(1f, pop.progress)
+                val progress = pop?.progress?.coerceIn(0f, 1f) ?: 1f
+                val punch = if (pop == null) 0f else kotlin.math.sin(progress * Math.PI).toFloat() * 0.14f
+                val scale = if (pop == null) 1f else 0.78f + 0.22f * progress + punch
                 drawBlock(center, block * scale, theme.colorFor(value), gap * 1.6f)
             }
         }
