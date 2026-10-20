@@ -87,18 +87,21 @@ kotlin {
     }
 }
 
-// Keep the underlying exception visible in GitHub check annotations when a hosted build fails.
-gradle.buildFinished { result ->
-    result.failure?.let { failure ->
-        val details = failure.stackTraceToString()
-            .take(4_000)
-            .replace("%", "%25")
-            .replace("\r", "%0D")
-            .replace("\n", "%0A")
-            .replace(":", "%3A")
-        System.err.println("::error title=Gradle build failure::${details}")
+// Temporary CI diagnostics: print the failing Gradle task and cause as a check annotation.
+gradle.taskGraph.addTaskExecutionListener(object : org.gradle.api.execution.TaskExecutionListener {
+    override fun beforeExecute(task: org.gradle.api.Task) = Unit
+    override fun afterExecute(task: org.gradle.api.Task, state: org.gradle.api.tasks.TaskState) {
+        state.failure?.let { failure ->
+            val details = failure.stackTraceToString()
+                .take(4_000)
+                .replace("%", "%25")
+                .replace("\r", "%0D")
+                .replace("\n", "%0A")
+                .replace(":", "%3A")
+            System.err.println("::error title=Gradle task failure::${task.path} ${details}")
+        }
     }
-}
+})
 
 dependencies {
     implementation("com.yandex.android:mobileads:8.6.0")
