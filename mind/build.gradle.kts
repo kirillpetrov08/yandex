@@ -87,6 +87,19 @@ kotlin {
     }
 }
 
+// Keep the underlying exception visible in GitHub check annotations when a hosted build fails.
+gradle.buildFinished { result ->
+    result.failure?.let { failure ->
+        val details = failure.stackTraceToString()
+            .take(4_000)
+            .replace("%", "%25")
+            .replace("\r", "%0D")
+            .replace("\n", "%0A")
+            .replace(":", "%3A")
+        System.err.println("::error title=Gradle build failure::${details}")
+    }
+}
+
 dependencies {
     implementation("com.yandex.android:mobileads:8.6.0")
     implementation("androidx.core:core-ktx:1.15.0")
