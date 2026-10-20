@@ -17,6 +17,19 @@ Compose с полностью интегрированной рекламой Р
 | Публикация | `store-listing/` (тексты ru/en, Data Safety, App content, release notes, иконка, feature graphic, 8 скриншотов), `app-ads.txt`, `privacy-policy.html` |
 | Знания | `docs/` — 13 документов: все форматы РСЯ, правила, модерация, выплаты, стратегия дохода, SDK-шпаргалка, чек-листы, troubleshooting |
 
+## Второе приложение: «Фокус — тренажёр внимания»
+
+В репозитории есть отдельный Android application-модуль `:mind` (`com.ayaks.focus`), самостоятельный лаунчер и собственное хранилище настроек/прогресса. Это не режим внутри BlockPuzzle: приложения устанавливаются отдельно и имеют отдельные version/application ID.
+
+- Kotlin + Jetpack Compose, офлайн-игровой цикл: память, зрительный поиск и Stroop-подобное внимание к цвету.
+- Ежедневная задача, локальный счёт/серия/рекорды; звук и вибрация отключаются.
+- Один адаптивный баннер РСЯ на неигровых страницах. `focus.bannerUnitId` намеренно пуст: игра работает без SDK-рекламы, пока владелец не укажет свой ID блока в кабинете РСЯ.
+- Материалы Google Play/RuStore, 5 скриншотов 1080×1920, feature graphic 1024×500, иконка и политика: [`store-listing/focus/`](store-listing/focus/).
+- Инструкция для публикации именно Focus: [`store-listing/focus/DEPLOY.md`](store-listing/focus/DEPLOY.md).
+- Команды проверки: `./gradlew :mind:testDebugUnitTest :mind:assembleDebug :mind:assembleRelease :mind:bundleRelease`.
+
+**Важно:** сборка и тесты `:mind` в текущей среде ещё не подтверждены (локально отсутствует Java). Не загружайте APK/AAB в магазин, пока CI не завершит эти задачи успешно и приложение не проверено на устройстве.
+
 ## Быстрый старт
 
 Пошаговая инструкция «от нуля до продакшена» — [`DEPLOY.md`](DEPLOY.md).

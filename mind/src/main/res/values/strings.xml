@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Фокус — тренажёр внимания</string>
+    <color name="focus_icon_background">#10172D</color>
+</resources>

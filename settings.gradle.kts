@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "BlockPuzzle"
-include(":app")
+include(":app", ":mind")
