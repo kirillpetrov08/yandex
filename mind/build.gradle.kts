@@ -87,38 +87,6 @@ kotlin {
     }
 }
 
-// Temporary CI diagnostics: surface the actual failed test or task cause in GitHub annotations.
-fun Throwable.causeSummary(): String = generateSequence(this) { it.cause }
-    .joinToString(" -> ") { "${it.javaClass.simpleName}: ${it.message.orEmpty()}" }
-    .take(3_000)
-    .replace("%", "%25")
-    .replace("\r", "%0D")
-    .replace("\n", "%0A")
-    .replace(":", "%3A")
-
-tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
-    addTestListener(object : org.gradle.api.tasks.testing.TestListener {
-        override fun beforeSuite(suite: org.gradle.api.tasks.testing.TestDescriptor) = Unit
-        override fun afterSuite(suite: org.gradle.api.tasks.testing.TestDescriptor, result: org.gradle.api.tasks.testing.TestResult) = Unit
-        override fun beforeTest(testDescriptor: org.gradle.api.tasks.testing.TestDescriptor) = Unit
-        override fun afterTest(testDescriptor: org.gradle.api.tasks.testing.TestDescriptor, result: org.gradle.api.tasks.testing.TestResult) {
-            if (result.resultType == org.gradle.api.tasks.testing.TestResult.ResultType.FAILURE) {
-                val details = result.exceptions.joinToString(" | ") { it.causeSummary() }
-                System.err.println("::error title=Failed unit test::${testDescriptor.className}.${testDescriptor.name} ${details}")
-            }
-        }
-    })
-}
-
-gradle.taskGraph.addTaskExecutionListener(object : org.gradle.api.execution.TaskExecutionListener {
-    override fun beforeExecute(task: org.gradle.api.Task) = Unit
-    override fun afterExecute(task: org.gradle.api.Task, state: org.gradle.api.tasks.TaskState) {
-        state.failure?.let { failure ->
-            System.err.println("::error title=Gradle task failure::${task.path} ${failure.causeSummary()}")
-        }
-    }
-})
-
 dependencies {
     implementation("com.yandex.android:mobileads:8.6.0")
     implementation("androidx.core:core-ktx:1.15.0")

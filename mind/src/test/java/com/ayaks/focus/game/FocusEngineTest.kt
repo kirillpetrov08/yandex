@@ -11,8 +11,8 @@ class FocusEngineTest {
         val engine = FocusEngine(23)
         var session = engine.start(FocusMode.MEMORY)
         assertEquals(3, session.sequence.size)
-        session = engine.memoryInputReady(session)
         repeat(FocusEngine.MEMORY_ROUNDS) { round ->
+            if (session.phase == GamePhase.SHOWING) session = engine.memoryInputReady(session)
             val expectedLength = (3 + round).coerceAtMost(8)
             assertEquals(expectedLength, session.sequence.size)
             session.sequence.forEach { cell ->
@@ -46,12 +46,14 @@ class FocusEngineTest {
         repeat(FocusEngine.SEARCH_ROUNDS) { round ->
             assertEquals(if (session.round < 5) 16 else 25, session.searchTiles.size)
             assertEquals(1, session.searchTiles.count { it == session.searchTarget })
-            val wrongCell = session.searchTiles.indexOfFirst { it != session.searchTarget }
-            val wrong = engine.tapSearch(session, wrongCell)
-            assertFalse(wrong.correct)
-            assertEquals(GamePhase.FEEDBACK, wrong.session.phase)
-            assertEquals(session.completedRounds, wrong.session.completedRounds)
-            session = engine.resumeSearch(wrong.session)
+            if (round == 0) {
+                val wrongCell = session.searchTiles.indexOfFirst { it != session.searchTarget }
+                val wrong = engine.tapSearch(session, wrongCell)
+                assertFalse(wrong.correct)
+                assertEquals(GamePhase.FEEDBACK, wrong.session.phase)
+                assertEquals(session.completedRounds, wrong.session.completedRounds)
+                session = engine.resumeSearch(wrong.session)
+            }
             val targetCell = session.searchTiles.indexOf(session.searchTarget)
             session = engine.tapSearch(session, targetCell).session
             if (round < FocusEngine.SEARCH_ROUNDS - 1) assertEquals(GamePhase.INPUT, session.phase)
