@@ -145,6 +145,10 @@ val stageFocusReleaseBundle by tasks.registering(Copy::class) {
     from(layout.buildDirectory.dir("outputs/bundle/release"))
     into(rootProject.layout.projectDirectory.dir("app/build/outputs/focus/bundle/release"))
 }
-tasks.named("assembleDebug") { finalizedBy(stageFocusDebug) }
-tasks.named("assembleRelease") { finalizedBy(stageFocusReleaseApk) }
-tasks.named("bundleRelease") { finalizedBy(stageFocusReleaseBundle) }
+tasks.configureEach {
+    when (name) {
+        "assembleDebug" -> finalizedBy(stageFocusDebug)
+        "assembleRelease" -> finalizedBy(stageFocusReleaseApk)
+        "bundleRelease" -> finalizedBy(stageFocusReleaseBundle)
+    }
+}
