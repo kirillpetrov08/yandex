@@ -24,10 +24,11 @@
 1. Добавьте изменения ветки `arena/dc0a599c-yandex` в свой GitHub-репозиторий обычным способом. Не переключайтесь на другую ветку; workflow запускается на ветках `arena/**`.
 2. Откройте репозиторий на GitHub → **Actions** → **Android CI** → последний запуск для этой ветки.
 3. Дождитесь зелёного workflow. Он должен завершить тесты, `:mind:assembleDebug`, `:mind:assembleRelease` и `:mind:bundleRelease`. Если шаг красный — **не загружайте сборку в магазин**; сохраните полный log и устраните ошибку.
-4. Внизу успешного запуска скачайте artifact `build-outputs`. Ищите файлы под `mind/build/outputs/`:
-   - `bundle/release/mind-release.aab` или `bundle/release/*.aab` — Google Play;
-   - `apk/release/*.apk` — ручная установка и тест;
+4. Внизу успешного запуска скачайте artifact `build-outputs`. В нём Focus собран отдельно от BlockPuzzle, а его outputs скопированы в `app/build/outputs/focus/`:
+   - `bundle/release/*.aab` — Google Play;
+   - `apk/release/*.apk` — release APK для ручной проверки и RuStore;
    - `apk/debug/*.apk` — только для внутренней проверки.
+   Не перепутайте Focus-файлы внутри `focus/` с APK/AAB BlockPuzzle в корне `outputs/`.
 5. Установите release APK на реальный Android-телефон. Проверьте запуск, каждый режим, выход/возврат, счёт и настройки; попробуйте включить/выключить звук, вибрацию и персонализацию. Если указан production ID — убедитесь, что баннер есть на неигровых экранах и отсутствует в раундах. **Не нажимайте собственные объявления.**
 6. Проверьте подпись: без upload-key workflow использует debug-подпись — такой AAB не подходит для Play. Храните upload-key и пароль в менеджере паролей и двух защищённых резервных местах. Для CI создайте секреты GitHub `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` по общему гайду [`../../DEPLOY.md`](../../DEPLOY.md). Не присылайте ключи агенту.
 

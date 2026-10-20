@@ -103,3 +103,21 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
 }
+
+// The repository CI currently uploads app/build/outputs. Mirror Focus artifacts there too,
+// so the same downloadable artifact contains APKs and AABs from both independent apps.
+val stageFocusDebug by tasks.registering(Copy::class) {
+    from(layout.buildDirectory.dir("outputs/apk/debug"))
+    into(rootProject.layout.projectDirectory.dir("app/build/outputs/focus/apk/debug"))
+}
+val stageFocusReleaseApk by tasks.registering(Copy::class) {
+    from(layout.buildDirectory.dir("outputs/apk/release"))
+    into(rootProject.layout.projectDirectory.dir("app/build/outputs/focus/apk/release"))
+}
+val stageFocusReleaseBundle by tasks.registering(Copy::class) {
+    from(layout.buildDirectory.dir("outputs/bundle/release"))
+    into(rootProject.layout.projectDirectory.dir("app/build/outputs/focus/bundle/release"))
+}
+tasks.named("assembleDebug") { finalizedBy(stageFocusDebug) }
+tasks.named("assembleRelease") { finalizedBy(stageFocusReleaseApk) }
+tasks.named("bundleRelease") { finalizedBy(stageFocusReleaseBundle) }
